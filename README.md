@@ -34,4 +34,4 @@ This flowchart represents an **automated driver assistance workflow** designed t
 
 **Installation**:
 
-`pip install playsound`
+`pip install pygame`

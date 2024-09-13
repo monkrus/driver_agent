@@ -1,18 +1,27 @@
 import random
 import time
-from playsound import playsound
 import os
+import pygame
+
+# Initialize pygame mixer for playing sound
+pygame.mixer.init()
 
 # Paths to audio files (replace with actual paths to .mp3/.wav files on your system)
-TTS_AUDIO_FILE = 'ask_driver.mp3'  # "Would you like me to play something relaxing?" audio file
-JAZZ_PLAYLIST_FILE = 'jazz_playlist.mp3'  # Jazz music file
-YES_RESPONSE_FILE = 'yes_response.mp3'  # "Yes" audio file (for simulating the driver’s response)
-NO_RESPONSE_FILE = 'no_response.mp3'  # "No" audio file
+TTS_AUDIO_FILE = 'audio/play_relaxing.mp3'  # "Would you like me to play something relaxing?" audio file
+JAZZ_PLAYLIST_FILE = 'audio/jazz.wav'  # Jazz music file
+YES_RESPONSE_FILE = 'audio/yes.mp3'  # "Yes" audio file (for simulating the driver’s response)
+NO_RESPONSE_FILE = 'audio/no.mp3'  # "No" audio file
 
 def play_audio(file_path):
-    """Play audio using the playsound library."""
+    """Play audio using pygame mixer."""
     if os.path.exists(file_path):
-        playsound(file_path)
+        try:
+            pygame.mixer.music.load(file_path)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)  # Wait for the audio to finish
+        except pygame.error as e:
+            print(f"Error playing {file_path}: {e}")
     else:
         print(f"Audio file {file_path} not found, skipping audio simulation.")
 
@@ -20,7 +29,8 @@ def detect_stress():
     """Simulate stress detection using random values."""
     stress_score = random.randint(0, 100)
     print(f"Simulated Stress Score: {stress_score}")
-    return stress_score > 70  # Threshold for stress
+    # Lower the threshold to make stress detection more likely
+    return stress_score > 50  # Threshold for stress (increased likelihood of stress detection)
 
 def control_car_system():
     """Simulate dimming the display and lowering the volume in the car."""
@@ -33,7 +43,8 @@ def ask_driver():
 
 def get_driver_response():
     """Simulate voice recognition by randomly selecting 'Yes' or 'No'."""
-    response = random.choice(['yes', 'no'])
+    # Skew probabilities to make "Yes" more likely
+    response = random.choices(['yes', 'no'], weights=[0.7, 0.3], k=1)[0]  # 70% chance of "Yes"
     print(f"Simulated Driver Response: {response}")
     if response == 'yes':
         play_audio(YES_RESPONSE_FILE)  # Simulate driver saying "Yes"
